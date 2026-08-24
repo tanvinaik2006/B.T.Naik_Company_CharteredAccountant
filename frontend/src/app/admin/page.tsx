@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { db } from '@/lib/firebase/clientApp';
+import { db, isFirebaseConfigured } from '@/lib/firebase/clientApp';
 import { collection, query, getDocs, orderBy } from 'firebase/firestore';
 import { FaFileAlt, FaDownload, FaLock } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
@@ -20,25 +20,24 @@ interface DocumentRecord {
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  
+
   const [documents, setDocuments] = useState<DocumentRecord[]>([]);
   const [loadingDocs, setLoadingDocs] = useState(true);
   const [error, setError] = useState('');
 
-  // Very basic RBAC check for the prototype phase.
-  // In a real production app, this should be enforced by Custom Claims and Firestore Security Rules.
+  // Basic RBAC – admin email hard‑coded for demo
   useEffect(() => {
     if (!loading) {
       if (!user) {
         router.push('/portal/login');
+      } else if (user.email !== 'admin@btnaik.com') {
+        setError('Access Denied. You do not have administrative privileges.');
+        setLoadingDocs(false);
+      } else if (!isFirebaseConfigured) {
+        setError('Firebase not configured – cannot fetch documents.');
+        setLoadingDocs(false);
       } else {
-        // Hardcoded admin email for prototype demo
-        if (user.email === 'admin@btnaik.com') {
-          fetchAllDocuments();
-        } else {
-          setError('Access Denied. You do not have administrative privileges.');
-          setLoadingDocs(false);
-        }
+        fetchAllDocuments();
       }
     }
   }, [user, loading, router]);
@@ -53,8 +52,8 @@ export default function AdminDashboard() {
       });
       setDocuments(docsData);
     } catch (err: any) {
-      console.error("Error fetching all documents:", err);
-      setError("Failed to load documents. Ensure Firestore security rules allow admin access.");
+      console.error('Error fetching all documents:', err);
+      setError('Failed to load documents. Ensure Firestore security rules allow admin access.');
     } finally {
       setLoadingDocs(false);
     }
@@ -71,7 +70,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="p-10 text-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-navy-primary mx-auto"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-navy-primary mx-auto" />
         <p className="text-xs text-text-muted mt-4">Loading admin dashboard...</p>
       </div>
     );
@@ -93,7 +92,6 @@ export default function AdminDashboard() {
   return (
     <div className="bg-bg-secondary min-h-screen py-12 route-transition">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         <div className="mb-10 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-serif font-semibold text-navy-ink">Staff Admin Dashboard</h1>
@@ -108,7 +106,7 @@ export default function AdminDashboard() {
               {documents.length} Total
             </span>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-border-gray">
               <thead className="bg-bg-secondary">
@@ -149,9 +147,9 @@ export default function AdminDashboard() {
                         {formatSize(doc.size)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-xs">
-                        <a 
-                          href={doc.url} 
-                          target="_blank" 
+                        <a
+                          href={doc.url}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-navy-primary hover:text-navy-ink inline-flex items-center font-semibold link-draw btn-press"
                         >
@@ -165,7 +163,6 @@ export default function AdminDashboard() {
             </table>
           </div>
         </div>
-
       </div>
     </div>
   );

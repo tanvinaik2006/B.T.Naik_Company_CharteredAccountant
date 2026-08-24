@@ -1,30 +1,38 @@
 'use client';
 
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+
+  const isLoginPage = pathname?.startsWith('/portal/login');
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !user && !isLoginPage) {
       router.push('/portal/login');
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, isLoginPage]);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-navy-primary"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-navy-primary" />
       </div>
     );
   }
 
-  // Even if pushing to login, don't render children until we know they are authenticated
+  // Render children directly on the login page (or once authenticated)
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
+
   if (!user) {
-    return null; 
+    // Guard – should not reach here because of redirect above
+    return null;
   }
 
   return (

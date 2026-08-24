@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { db } from '@/lib/firebase/clientApp';
-import { supabase } from '@/lib/supabase/clientApp';
+import { db, isFirebaseConfigured } from '@/lib/firebase/clientApp';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase/clientApp';
 import { collection, addDoc, query, where, getDocs, orderBy, serverTimestamp } from 'firebase/firestore';
 import { FaFileAlt, FaUpload, FaSignOutAlt, FaDownload } from 'react-icons/fa';
 
@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const { user, signOut } = useAuth();
   const [documents, setDocuments] = useState<DocumentRecord[]>([]);
   const [loadingDocs, setLoadingDocs] = useState(true);
-  
+
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
 
@@ -31,6 +31,11 @@ export default function DashboardPage() {
 
   const fetchDocuments = async () => {
     if (!user) return;
+    if (!isFirebaseConfigured) {
+      console.warn('Firebase not configured – cannot fetch documents');
+      setLoadingDocs(false);
+      return;
+    }
     try {
       const q = query(
         collection(db, 'documents'),
@@ -44,7 +49,7 @@ export default function DashboardPage() {
       });
       setDocuments(docsData);
     } catch (error) {
-      console.error("Error fetching documents:", error);
+      console.error('Error fetching documents:', error);
     } finally {
       setLoadingDocs(false);
     }
@@ -55,7 +60,12 @@ export default function DashboardPage() {
     if (!file || !user) return;
 
     if (file.size > 10 * 1024 * 1024) {
-      setUploadError("File size exceeds 10MB limit.");
+      setUploadError('File size exceeds 10MB limit.');
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      setUploadError('Supabase is not configured – cannot upload files.');
       return;
     }
 
@@ -76,20 +86,25 @@ export default function DashboardPage() {
 
       const downloadUrl = publicUrl;
 
-      await addDoc(collection(db, 'documents'), {
-        userId: user.uid,
-        userEmail: user.email || user.phoneNumber || 'Unknown',
-        filename: file.name,
-        url: downloadUrl,
-        size: file.size,
-        createdAt: serverTimestamp(),
-      });
+      if (!isFirebaseConfigured) {
+        console.warn('Firebase not configured – cannot store document metadata.');
+        setUploadError('Document uploaded, but metadata cannot be saved (Firebase not configured).');
+      } else {
+        await addDoc(collection(db, 'documents'), {
+          userId: user.uid,
+          userEmail: user.email || user.phoneNumber || 'Unknown',
+          filename: file.name,
+          url: downloadUrl,
+          size: file.size,
+          createdAt: serverTimestamp(),
+        });
+      }
 
       await fetchDocuments();
       e.target.value = '';
     } catch (error: any) {
-      console.error("Upload error:", error);
-      setUploadError(error.message || "Failed to upload document.");
+      console.error('Upload error:', error);
+      setUploadError(error.message || 'Failed to upload document.');
     } finally {
       setUploading(false);
     }
@@ -102,6 +117,10 @@ export default function DashboardPage() {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
+
+  if (!user) {
+    return null; // should be redirected by layout
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -119,7 +138,6 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         {/* Upload Section */}
         <div className="lg:col-span-1">
           <div className="bg-white p-6 rounded-[3px] border border-border-gray">
@@ -127,7 +145,7 @@ export default function DashboardPage() {
             <p className="text-xs text-text-muted mb-6 leading-relaxed">
               Upload invoices, Form 16, or bank statements securely. Files are retained for 6 months.
             </p>
-            
+
             {uploadError && (
               <div className="mb-4 text-xs text-accent-warning bg-white p-3 rounded-[3px] border border-accent-warning">
                 {uploadError}
@@ -137,9 +155,7 @@ export default function DashboardPage() {
             <div className="border-2 border-dashed border-border-gray rounded-[3px] p-8 text-center hover:bg-bg-secondary transition-colors">
               <FaUpload className="mx-auto text-2xl text-text-muted mb-3" />
               <label htmlFor="file-upload" className="cursor-pointer">
-                <span className="block text-xs font-semibold text-navy-primary hover:text-navy-ink link-draw">
-                  Select a file
-                </span>
+                <span className="block text-xs font-semibold text-navy-primary hover:text-navy-ink link-draw">Select a file</span>
                 <input
                   id="file-upload"
                   name="file-upload"
@@ -151,7 +167,7 @@ export default function DashboardPage() {
               </label>
               <p className="mt-1 text-[10px] text-text-muted uppercase tracking-wider">PDF, XLSX, DOCX up to 10MB</p>
             </div>
-            
+
             {uploading && (
               <div className="mt-4 flex items-center justify-center text-xs text-navy-primary">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-navy-primary mr-2"></div>
@@ -167,7 +183,7 @@ export default function DashboardPage() {
             <div className="px-6 py-4 border-b border-border-gray bg-bg-secondary">
               <h2 className="text-lg font-serif font-semibold text-navy-ink">Your Documents</h2>
             </div>
-            
+
             <div className="p-0">
               {loadingDocs ? (
                 <div className="p-8 text-center text-xs text-text-muted">Loading documents...</div>
@@ -190,9 +206,9 @@ export default function DashboardPage() {
                           </div>
                         </div>
                       </div>
-                      <a 
-                        href={doc.url} 
-                        target="_blank" 
+                      <a
+                        href={doc.url}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 text-navy-primary hover:text-navy-ink hover:bg-bg-secondary rounded-[3px] transition-colors btn-press"
                         title="Download"
@@ -206,7 +222,6 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

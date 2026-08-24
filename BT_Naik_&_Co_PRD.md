@@ -4,7 +4,7 @@
 **Document Version:** 1.0
 **Date:** August 14, 2026
 **Prepared For:** B.T. Naik & Company
-**Prepared By:** [Your Name / Team]
+**Prepared By:** Bhau's
 
 ---
 
@@ -60,7 +60,7 @@ CA firms in India are permitted to maintain websites, but must follow ICAI's reg
 
 **Acceptance Criteria:**
 - All 8 service pages live with unique URLs
-- Each page loads in under 2 seconds
+- Each page loads in under 3 seconds
 - Content is editable via CMS by an authorized admin user
 
 ---
