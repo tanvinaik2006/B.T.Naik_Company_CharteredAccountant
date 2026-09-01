@@ -13,8 +13,11 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const isAuthPage = isLoginPage || pathname?.startsWith('/portal/signup');
 
   useEffect(() => {
-    if (!loading && !user && !isAuthPage) {
+    if (loading) return;
+    if (!user && !isAuthPage) {
       router.push('/portal/login');
+    } else if (user && isAuthPage) {
+      router.push('/portal/dashboard');
     }
   }, [user, loading, router, isAuthPage]);
 
