@@ -54,10 +54,11 @@ export default function SignUpPage() {
             )}
             <div className="space-y-4">
               <div>
-                <label className="block text-[10px] uppercase tracking-wider font-semibold text-text-muted mb-1.5">
+                <label htmlFor="signup-email" className="block text-[10px] uppercase tracking-wider font-semibold text-text-muted mb-1.5">
                   Email address
                 </label>
                 <input
+                  id="signup-email"
                   type="email"
                   required
                   value={email}
@@ -67,10 +68,11 @@ export default function SignUpPage() {
                 />
               </div>
               <div>
-                <label className="block text-[10px] uppercase tracking-wider font-semibold text-text-muted mb-1.5">
+                <label htmlFor="signup-password" className="block text-[10px] uppercase tracking-wider font-semibold text-text-muted mb-1.5">
                   Password
                 </label>
                 <input
+                  id="signup-password"
                   type="password"
                   required
                   value={password}
@@ -80,10 +82,11 @@ export default function SignUpPage() {
                 />
               </div>
               <div>
-                <label className="block text-[10px] uppercase tracking-wider font-semibold text-text-muted mb-1.5">
+                <label htmlFor="signup-confirm" className="block text-[10px] uppercase tracking-wider font-semibold text-text-muted mb-1.5">
                   Confirm Password
                 </label>
                 <input
+                  id="signup-confirm"
                   type="password"
                   required
                   value={confirmPassword}

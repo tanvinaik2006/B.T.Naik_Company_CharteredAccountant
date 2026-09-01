@@ -90,13 +90,13 @@ export default function ContactForm() {
       </div>
 
       {status === 'success' && (
-        <div className="p-4 bg-white border border-accent-success rounded-[3px]">
+        <div className="p-4 bg-white border border-accent-success rounded-[3px]" role="status">
           <p className="text-xs text-accent-success text-center font-medium">Thank you for reaching out. We will get back to you shortly.</p>
         </div>
       )}
 
       {status === 'error' && errorMsg && (
-        <div className="p-4 bg-white border border-accent-warning rounded-[3px]">
+        <div className="p-4 bg-white border border-accent-warning rounded-[3px]" role="alert">
           <p className="text-xs text-accent-warning text-center font-medium">{errorMsg}</p>
         </div>
       )}
