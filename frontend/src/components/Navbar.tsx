@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 
 import { useState, useEffect } from 'react';
@@ -7,6 +8,7 @@ import { useState, useEffect } from 'react';
 
 export default function Navbar() {
   const { user } = useAuth();
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -86,3 +88,7 @@ export default function Navbar() {
     </nav>
   );
 }
+function setIsScrolled(arg0: boolean) {
+  throw new Error('Function not implemented.');
+}
+
