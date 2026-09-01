@@ -52,15 +52,15 @@ export default async function ServicePage({ params }: Props) {
 
                 <h2 className="text-xl font-serif text-navy-ink mb-4 border-b border-border-gray pb-2">Scope of Services</h2>
                 <ul className="list-disc pl-5 mb-10 space-y-3 text-text-body text-sm">
-                  {service.scope.map((item, index) => (
-                    <li key={index}>{item}</li>
+                  {service.scope.map((item) => (
+                    <li key={item}>{item}</li>
                   ))}
                 </ul>
 
                 <h2 className="text-xl font-serif text-navy-ink mb-4 border-b border-border-gray pb-2">Regulatory References</h2>
                 <ul className="list-disc pl-5 mb-12 space-y-3 text-text-body text-sm">
-                  {service.regulatoryReferences.map((ref, index) => (
-                    <li key={index}>{ref}</li>
+                  {service.regulatoryReferences.map((ref) => (
+                    <li key={ref}>{ref}</li>
                   ))}
                 </ul>
               </div>

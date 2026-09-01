@@ -27,6 +27,7 @@ export default function LoginPage() {
     setError('');
     
     try {
+      if (!auth) throw new Error('Firebase not configured');
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/portal/dashboard');
     } catch (err: any) {
