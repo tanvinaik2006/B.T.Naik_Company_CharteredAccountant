@@ -43,7 +43,7 @@ export default function Home() {
           </h1>
 
           <p className="line-reveal line-reveal-3 text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-12 leading-relaxed">
-            Professional Chartered Accountancy firm providing comprehensive compliance, auditing, taxation, and statutory advisory services.
+            Auditing, taxation, and compliance services for businesses and individuals across Maharashtra.
           </p>
 
           {/* 4. Supporting content fades in last */}
@@ -70,7 +70,7 @@ export default function Home() {
           <ScrollReveal>
             <h2 className="text-3xl font-serif text-navy-ink mb-6">Firm Overview</h2>
             <p className="text-base text-text-body max-w-3xl mx-auto leading-relaxed">
-              Established with a commitment to professional excellence, B.T. Naik & Company assists organizations and individuals in navigating complex statutory requirements. Our core focus areas include auditing and assurance, direct and indirect taxation, corporate compliance, and advisory services.
+              B.T. Naik & Company assists organizations and individuals with auditing, direct and indirect taxation, corporate compliance, and advisory services. Our practice is grounded in professional ethics and regulatory precision.
             </p>
           </ScrollReveal>
         </div>
@@ -81,7 +81,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal className="text-center mb-16">
             <h2 className="text-3xl font-serif text-navy-ink">Areas of Practice</h2>
-            <p className="text-text-muted mt-2 text-sm">Professional expertise tailored to regulatory environments</p>
+            <p className="text-text-muted mt-2 text-sm">Services tailored to regulatory requirements</p>
           </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
