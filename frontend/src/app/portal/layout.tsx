@@ -32,7 +32,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   }
 
   if (!user) {
-    // Guard – should not reach here because of redirect above
+    // Guard - should not reach here because of redirect above
     return null;
   }
 

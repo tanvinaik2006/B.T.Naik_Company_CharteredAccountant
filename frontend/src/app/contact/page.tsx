@@ -63,7 +63,7 @@ export default function ContactPage() {
                     <FaClock className="flex-shrink-0 w-4 h-4 text-text-muted mt-0.5" />
                     <div className="ml-4">
                       <p className="text-xs font-semibold text-navy-ink">Working Hours</p>
-                      <p className="mt-1 text-xs text-text-body leading-relaxed">Monday – Friday: <span className="num-ledger">10:00 AM – 6:00 PM</span><br/>Saturday: <span className="num-ledger">10:00 AM – 2:00 PM</span></p>
+                      <p className="mt-1 text-xs text-text-body leading-relaxed">Monday - Friday: <span className="num-ledger">10:00 AM - 6:00 PM</span><br/>Saturday: <span className="num-ledger">10:00 AM - 2:00 PM</span></p>
                     </div>
                   </li>
                 </ul>
