@@ -32,7 +32,7 @@ export default function DashboardPage() {
   const fetchDocuments = async () => {
     if (!user) return;
     if (!isFirebaseConfigured) {
-      console.warn('Firebase not configured – cannot fetch documents');
+      console.warn('Firebase not configured - cannot fetch documents');
       setLoadingDocs(false);
       return;
     }
@@ -59,11 +59,11 @@ export default function DashboardPage() {
       const file = e.target.files?.[0];
       if (!file || !user) return;
 
-      // Guard clauses – keep the function shallow
+      // Guard clauses - keep the function shallow
       if (file.size > 10 * 1024 * 1024) return setUploadError('File size exceeds 10MB limit.');
-      if (!isSupabaseConfigured) return setUploadError('Supabase is not configured – cannot upload files.');
+      if (!isSupabaseConfigured) return setUploadError('Supabase is not configured - cannot upload files.');
 
-      // Verify bucket exists – fail fast
+      // Verify bucket exists - fail fast
       const { error: bucketError } = await supabase.storage.from('client-documents').list('', { limit: 1 });
       if (bucketError) return setUploadError('Supabase bucket "client-documents" not found. Create it in your Supabase project.');
 
@@ -79,7 +79,7 @@ export default function DashboardPage() {
         const downloadUrl = publicUrl;
 
         if (!isFirebaseConfigured) {
-          console.warn('Firebase not configured – cannot store document metadata.');
+          console.warn('Firebase not configured - cannot store document metadata.');
           setUploadError('Document uploaded, but metadata cannot be saved (Firebase not configured).');
         } else {
           await addDoc(collection(db, 'documents'), {
