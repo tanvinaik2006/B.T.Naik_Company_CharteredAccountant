@@ -50,6 +50,7 @@ export default function ResourcesPage() {
               </div>
               <input
                 type="text"
+                aria-label="Search resources"
                 placeholder="Search resources..."
                 className="block w-full pl-9 pr-3 py-2 border border-border-gray rounded-[3px] text-xs bg-white placeholder-text-muted focus:outline-none focus:ring-1 focus:ring-navy-primary focus:border-navy-primary"
                 value={searchQuery}

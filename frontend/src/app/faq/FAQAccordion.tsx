@@ -56,6 +56,7 @@ export default function FAQAccordion({ faqs, categories }: Props) {
         </div>
         <input
           type="text"
+          aria-label="Search FAQs"
           placeholder="Search for a topic (e.g., GST, ITR, ROC)..."
           className="block w-full pl-9 pr-3 py-2.5 border border-border-gray rounded-[3px] text-xs bg-white placeholder-text-muted focus:outline-none focus:ring-1 focus:ring-navy-primary focus:border-navy-primary"
           value={searchQuery}
@@ -78,7 +79,9 @@ export default function FAQAccordion({ faqs, categories }: Props) {
                 <div key={faq.id} className="border border-border-gray rounded-[3px] bg-bg-secondary overflow-hidden transition-colors">
                   <button
                     onClick={() => toggleItem(faq.id)}
-                    className="w-full flex justify-between items-center p-4 text-left focus:outline-none hover:bg-slate-100 transition-colors"
+                    aria-expanded={openItems.has(faq.id)}
+                    aria-controls={`faq-answer-${faq.id}`}
+                    className="w-full flex justify-between items-center p-4 text-left focus:outline-none focus:ring-1 focus:ring-navy-primary hover:bg-slate-100 transition-colors"
                   >
                     <span className="text-xs font-semibold text-navy-ink leading-relaxed">
                       {formatText(faq.question)}
@@ -90,7 +93,11 @@ export default function FAQAccordion({ faqs, categories }: Props) {
                     />
                   </button>
                   {openItems.has(faq.id) && (
-                    <div className="p-4 border-t border-border-gray bg-white transition-opacity duration-200">
+                    <div
+                      id={`faq-answer-${faq.id}`}
+                      role="region"
+                      className="p-4 border-t border-border-gray bg-white transition-opacity duration-200"
+                    >
                       <p className="text-xs text-text-body leading-relaxed">
                         {formatText(faq.answer)}
                       </p>
