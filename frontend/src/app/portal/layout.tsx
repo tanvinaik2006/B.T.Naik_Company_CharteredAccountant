@@ -10,12 +10,13 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
 
   const isLoginPage = pathname?.startsWith('/portal/login');
+  const isAuthPage = isLoginPage || pathname?.startsWith('/portal/signup');
 
   useEffect(() => {
-    if (!loading && !user && !isLoginPage) {
+    if (!loading && !user && !isAuthPage) {
       router.push('/portal/login');
     }
-  }, [user, loading, router, isLoginPage]);
+  }, [user, loading, router, isAuthPage]);
 
   if (loading) {
     return (
@@ -26,7 +27,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   }
 
   // Render children directly on the login page (or once authenticated)
-  if (isLoginPage) {
+  if (isLoginPage || pathname?.startsWith('/portal/signup')) {
     return <>{children}</>;
   }
 
