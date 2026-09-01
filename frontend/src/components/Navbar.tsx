@@ -1,10 +1,12 @@
 'use client';
 
+import { useAuth } from '@/context/AuthContext';
+
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+
 
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -73,13 +75,11 @@ export default function Navbar() {
             <Link href="/contact" className={`${linkColorClass} px-1 py-2 text-sm font-medium transition-colors link-draw`}>
               Contact
             </Link>
-            <Link href="/portal/login" className={`ml-4 inline-flex items-center justify-center px-4 py-2 border rounded-[3px] text-sm font-medium transition-all duration-200 btn-press ${
-              isScrolled 
-                ? 'border-white text-navy-primary bg-white hover:bg-slate-100' 
-                : 'border-navy-primary text-white bg-navy-primary hover:bg-navy-ink'
-            }`}>
-              Client Login
-            </Link>
+            {user ? (
+              <Link href="/portal/dashboard" className={`ml-4 inline-flex items-center justify-center px-4 py-2 border rounded-[3px] text-sm font-medium transition-all duration-200 btn-press ${isScrolled ? 'border-white text-navy-primary bg-white hover:bg-slate-100' : 'border-navy-primary text-white bg-navy-primary hover:bg-navy-ink'}`}>Dashboard</Link>
+            ) : (
+              <Link href="/portal/login" className={`ml-4 inline-flex items-center justify-center px-4 py-2 border rounded-[3px] text-sm font-medium transition-all duration-200 btn-press ${isScrolled ? 'border-white text-navy-primary bg-white hover:bg-slate-100' : 'border-navy-primary text-white bg-navy-primary hover:bg-navy-ink'}`}>Client Login</Link>
+            )}
           </div>
         </div>
       </div>
