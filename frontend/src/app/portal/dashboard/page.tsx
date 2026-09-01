@@ -59,38 +59,23 @@ export default function DashboardPage() {
       const file = e.target.files?.[0];
       if (!file || !user) return;
 
-      if (file.size > 10 * 1024 * 1024) {
-        setUploadError('File size exceeds 10MB limit.');
-        return;
-      }
+      // Guard clauses – keep the function shallow
+      if (file.size > 10 * 1024 * 1024) return setUploadError('File size exceeds 10MB limit.');
+      if (!isSupabaseConfigured) return setUploadError('Supabase is not configured – cannot upload files.');
 
-      if (!isSupabaseConfigured) {
-        setUploadError('Supabase is not configured – cannot upload files.');
-        return;
-      }
-
-      // Verify the bucket exists before attempting upload
-      const { data: bucketList, error: bucketError } = await supabase.storage.from('client-documents').list('', { limit: 1 });
-      if (bucketError) {
-        setUploadError('Supabase bucket "client-documents" not found. Create it in your Supabase project.');
-        return;
-      }
+      // Verify bucket exists – fail fast
+      const { error: bucketError } = await supabase.storage.from('client-documents').list('', { limit: 1 });
+      if (bucketError) return setUploadError('Supabase bucket "client-documents" not found. Create it in your Supabase project.');
 
       setUploading(true);
       setUploadError('');
 
       try {
         const filePath = `clients/${user.uid}/${Date.now()}_${file.name}`;
-        const { data, error: uploadError } = await supabase.storage
-          .from('client-documents')
-          .upload(filePath, file);
-
+        const { error: uploadError } = await supabase.storage.from('client-documents').upload(filePath, file);
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('client-documents')
-          .getPublicUrl(filePath);
-
+        const { data: { publicUrl } } = supabase.storage.from('client-documents').getPublicUrl(filePath);
         const downloadUrl = publicUrl;
 
         if (!isFirebaseConfigured) {
@@ -106,12 +91,11 @@ export default function DashboardPage() {
             createdAt: serverTimestamp(),
           });
         }
-
         await fetchDocuments();
         e.target.value = '';
-      } catch (error: any) {
-        console.error('Upload error:', error);
-        setUploadError(error.message || 'Failed to upload document.');
+      } catch (err: any) {
+        console.error('Upload error:', err);
+        setUploadError(err.message || 'Failed to upload document.');
       } finally {
         setUploading(false);
       }
