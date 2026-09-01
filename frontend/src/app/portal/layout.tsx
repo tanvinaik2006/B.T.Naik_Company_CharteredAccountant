@@ -27,7 +27,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   }
 
   // Render children directly on the login page (or once authenticated)
-  if (isLoginPage || pathname?.startsWith('/portal/signup')) {
+  if (isAuthPage) {
     return <>{children}</>;
   }
 
