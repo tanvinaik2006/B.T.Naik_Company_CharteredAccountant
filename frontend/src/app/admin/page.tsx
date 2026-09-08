@@ -25,7 +25,7 @@ export default function AdminDashboard() {
   const [loadingDocs, setLoadingDocs] = useState(true);
   const [error, setError] = useState('');
 
-  // Basic RBAC – admin email hard‑coded for demo
+  // Basic RBAC - admin email hard-coded for demo
   useEffect(() => {
     if (!loading) {
       if (!user) {
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
         setError('Access Denied. You do not have administrative privileges.');
         setLoadingDocs(false);
       } else if (!isFirebaseConfigured) {
-        setError('Firebase not configured – cannot fetch documents.');
+        setError('Firebase not configured - cannot fetch documents.');
         setLoadingDocs(false);
       } else {
         fetchAllDocuments();

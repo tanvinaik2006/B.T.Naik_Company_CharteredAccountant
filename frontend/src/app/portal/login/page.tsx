@@ -27,6 +27,7 @@ export default function LoginPage() {
     setError('');
     
     try {
+      if (!auth) throw new Error('Firebase not configured');
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/portal/dashboard');
     } catch (err: any) {
@@ -135,48 +136,52 @@ export default function LoginPage() {
               </div>
             )}
 
-            {method === 'email' ? (
-              <form className="mt-8 space-y-5" onSubmit={handleEmailLogin}>
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="email-address" className="block text-[10px] uppercase tracking-wider font-semibold text-text-muted mb-1.5">Email address</label>
-                    <input
-                      id="email-address"
-                      name="email"
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className={inputClass}
-                      placeholder="you@example.com"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="password" className="block text-[10px] uppercase tracking-wider font-semibold text-text-muted mb-1.5">Password</label>
-                    <input
-                      id="password"
-                      name="password"
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className={inputClass}
-                      placeholder="••••••••"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full flex justify-center py-2.5 px-4 border border-navy-primary text-xs font-semibold rounded-[3px] text-white bg-navy-primary hover:bg-navy-ink focus:outline-none disabled:opacity-70 transition-colors btn-press"
-                  >
-                    {loading ? 'Signing in...' : 'Sign In'}
-                  </button>
-                </div>
-              </form>
-            ) : (
+{method === 'email' ? (
+  <div className="space-y-5">
+    <form className="mt-8" onSubmit={handleEmailLogin}>
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="email-address" className="block text-[10px] uppercase tracking-wider font-semibold text-text-muted mb-1.5">Email address</label>
+          <input
+            id="email-address"
+            name="email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={inputClass}
+            placeholder="you@example.com"
+          />
+        </div>
+        <div>
+          <label htmlFor="password" className="block text-[10px] uppercase tracking-wider font-semibold text-text-muted mb-1.5">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={inputClass}
+            placeholder="••••••••"
+          />
+        </div>
+      </div>
+      <div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full flex justify-center py-2.5 px-4 border border-navy-primary text-xs font-semibold rounded-[3px] text-white bg-navy-primary hover:bg-navy-ink focus:outline-none disabled:opacity-70 transition-colors btn-press"
+        >
+          {loading ? 'Signing in...' : 'Sign In'}
+        </button>
+      </div>
+    </form>
+    <div className="mt-4 text-center">
+      <a href="/portal/signup" className="text-navy-primary text-xs hover:underline">Don't have an account? Sign up</a>
+    </div>
+  </div>
+) : (
               <div className="mt-8 space-y-5">
                 {!confirmationResult ? (
                   <form onSubmit={handleSendOTP} className="space-y-5">

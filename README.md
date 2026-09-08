@@ -1,5 +1,17 @@
 # B.T. Naik & Company – Chartered Accountant Monorepo
 
+**Project analysis**
+
+- **Purpose**: A monorepo containing a public marketing website and a client portal for the chartered accountant firm B.T. Naik & Company.
+- **Frontend**: Next.js 16 (React server‑components) with Tailwind CSS, Firebase Auth for portal login, and Supabase storage for document uploads.
+- **Backend**: Minimal Express API exposing health, contact‑form, and rate‑chart endpoints. It also ships Firebase security rules.
+- **Data services**: Firebase Firestore (metadata) and Supabase object storage (client documents).
+- **Architecture**: Y‑monorepo layout with separate `frontend/` and `backend/` workspaces, managed via npm workspaces.
+- **Development workflow**: Run both services concurrently; the frontend reads env vars prefixed with `NEXT_PUBLIC_` and the backend reads a simple `.env` file.
+- **Deployment**: Frontend to Vercel, backend to any Node‑compatible host; environment variables must be mirrored in the hosting platform.
+
+---
+
 ## Overview
 
 This repository is a **monorepo** that hosts both the public website and the client portal for **B.T. Naik & Company**, a Chartered Accountant firm. It is built with:

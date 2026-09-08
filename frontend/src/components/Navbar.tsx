@@ -1,28 +1,65 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+import { useState, useEffect, useRef } from 'react';
 
 export default function Navbar() {
+  const { user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const servicesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 80);
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 80);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const linkColorClass = isScrolled 
-    ? 'text-slate-300 hover:text-white' 
+  useEffect(() => {
+    if (!servicesOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (servicesRef.current && !servicesRef.current.contains(e.target as Node)) {
+        setServicesOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [servicesOpen]);
+
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
+
+  const linkColorClass = isScrolled
+    ? 'text-slate-300 hover:text-white'
     : 'text-text-body hover:text-navy-primary';
 
+  const authBtnClass = isScrolled
+    ? 'border-white text-navy-primary bg-white hover:bg-slate-100'
+    : 'border-navy-primary text-white bg-navy-primary hover:bg-navy-ink';
+
+  const services = [
+    { href: '/services/auditing-and-assurance', label: 'Auditing & Assurance' },
+    { href: '/services/direct-tax', label: 'Direct Tax' },
+    { href: '/services/indirect-tax-gst', label: 'Indirect Tax (GST)' },
+    { href: '/services/company-law-roc', label: 'Company Law' },
+    { href: '/services/international-taxation', label: 'International Taxation' },
+    { href: '/services/nri-taxation', label: 'NRI Taxation' },
+    { href: '/services/valuation-services', label: 'Valuation' },
+    { href: '/services/accounts-outsourcing', label: 'Accounts Outsourcing' },
+  ];
+
   return (
-    <nav className={`sticky top-0 z-50 transition-all duration-200 ease-ledger border-b ${
-      isScrolled 
-        ? 'bg-navy-primary text-white border-navy-primary' 
+    <nav aria-label="Main navigation" className={`sticky top-0 z-50 transition-all duration-200 ease-ledger border-b ${
+      isScrolled
+        ? 'bg-navy-primary text-white border-navy-primary'
         : 'bg-white text-text-body border-border-gray'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -37,30 +74,46 @@ export default function Navbar() {
               </span>
             </Link>
           </div>
+
+          {/* Desktop nav */}
           <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-6">
             <Link href="/about" className={`${linkColorClass} px-1 py-2 text-sm font-medium transition-colors link-draw`}>
               About Us
             </Link>
-            <div className="relative group">
-              <button className={`${linkColorClass} px-1 py-2 text-sm font-medium transition-colors inline-flex items-center`}>
+
+            {/* Services dropdown */}
+            <div className="relative" ref={servicesRef}>
+              <button
+                onClick={() => setServicesOpen(!servicesOpen)}
+                onKeyDown={(e) => { if (e.key === 'Escape') setServicesOpen(false); }}
+                aria-expanded={servicesOpen}
+                aria-haspopup="true"
+                className={`${linkColorClass} px-1 py-2 text-sm font-medium transition-colors inline-flex items-center`}
+              >
                 Services
-                <svg className="ml-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className={`ml-1 h-4 w-4 transition-transform ${servicesOpen ? 'rotate-180' : ''}`} fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </button>
-              <div className={`absolute left-0 mt-2 w-56 rounded-[3px] border border-border-gray bg-white opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 ease-ledger`}>
-                <div className="py-1" role="menu" aria-orientation="vertical">
-                  <Link href="/services/auditing-and-assurance" className="block px-4 py-2 text-sm text-text-body hover:bg-bg-secondary transition-colors">Auditing & Assurance</Link>
-                  <Link href="/services/direct-tax" className="block px-4 py-2 text-sm text-text-body hover:bg-bg-secondary transition-colors">Direct Tax</Link>
-                  <Link href="/services/indirect-tax-gst" className="block px-4 py-2 text-sm text-text-body hover:bg-bg-secondary transition-colors">Indirect Tax (GST)</Link>
-                  <Link href="/services/company-law-roc" className="block px-4 py-2 text-sm text-text-body hover:bg-bg-secondary transition-colors">Company Law</Link>
-                  <Link href="/services/international-taxation" className="block px-4 py-2 text-sm text-text-body hover:bg-bg-secondary transition-colors">International Taxation</Link>
-                  <Link href="/services/nri-taxation" className="block px-4 py-2 text-sm text-text-body hover:bg-bg-secondary transition-colors">NRI Taxation</Link>
-                  <Link href="/services/valuation-services" className="block px-4 py-2 text-sm text-text-body hover:bg-bg-secondary transition-colors">Valuation</Link>
-                  <Link href="/services/accounts-outsourcing" className="block px-4 py-2 text-sm text-text-body hover:bg-bg-secondary transition-colors">Accounts Outsourcing</Link>
+              {servicesOpen && (
+                <div className="absolute left-0 mt-2 w-56 rounded-[3px] border border-border-gray bg-white shadow-lg">
+                  <div className="py-1" role="menu" aria-orientation="vertical">
+                    {services.map((s) => (
+                      <Link
+                        key={s.href}
+                        href={s.href}
+                        onClick={() => setServicesOpen(false)}
+                        className="block px-4 py-2 text-sm text-text-body hover:bg-bg-secondary transition-colors"
+                        role="menuitem"
+                      >
+                        {s.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
+
             <Link href="/resources" className={`${linkColorClass} px-1 py-2 text-sm font-medium transition-colors link-draw`}>
               Resources
             </Link>
@@ -73,16 +126,71 @@ export default function Navbar() {
             <Link href="/contact" className={`${linkColorClass} px-1 py-2 text-sm font-medium transition-colors link-draw`}>
               Contact
             </Link>
-            <Link href="/portal/login" className={`ml-4 inline-flex items-center justify-center px-4 py-2 border rounded-[3px] text-sm font-medium transition-all duration-200 btn-press ${
-              isScrolled 
-                ? 'border-white text-navy-primary bg-white hover:bg-slate-100' 
-                : 'border-navy-primary text-white bg-navy-primary hover:bg-navy-ink'
-            }`}>
-              Client Login
-            </Link>
+            {user ? (
+              <Link href="/portal/dashboard" className={`ml-4 inline-flex items-center justify-center px-4 py-2 border rounded-[3px] text-sm font-medium transition-all duration-200 btn-press ${authBtnClass}`}>Dashboard</Link>
+            ) : (
+              <Link href="/portal/login" className={`ml-4 inline-flex items-center justify-center px-4 py-2 border rounded-[3px] text-sm font-medium transition-all duration-200 btn-press ${authBtnClass}`}>Client Login</Link>
+            )}
           </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className="sm:hidden flex items-center justify-center p-2 -mr-2"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-expanded={mobileOpen}
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              {mobileOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="sm:hidden border-t border-border-gray bg-white">
+          <div className="px-4 py-4 space-y-3">
+            <Link href="/about" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-medium text-text-body hover:text-navy-primary">About Us</Link>
+            <div>
+              <button
+                onClick={() => setServicesOpen(!servicesOpen)}
+                aria-expanded={servicesOpen}
+                className="flex items-center justify-between w-full py-2 text-sm font-medium text-text-body hover:text-navy-primary"
+              >
+                Services
+                <svg className={`h-4 w-4 transition-transform ${servicesOpen ? 'rotate-180' : ''}`} fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+              {servicesOpen && (
+                <div className="pl-4 space-y-2 mt-1">
+                  {services.map((s) => (
+                    <Link key={s.href} href={s.href} onClick={() => { setMobileOpen(false); setServicesOpen(false); }} className="block py-1.5 text-sm text-text-muted hover:text-navy-primary">
+                      {s.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+            <Link href="/resources" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-medium text-text-body hover:text-navy-primary">Resources</Link>
+            <Link href="/rate-charts" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-medium text-text-body hover:text-navy-primary">Rate Charts</Link>
+            <Link href="/faq" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-medium text-text-body hover:text-navy-primary">FAQ</Link>
+            <Link href="/contact" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-medium text-text-body hover:text-navy-primary">Contact</Link>
+            <div className="pt-2 border-t border-border-gray">
+              {user ? (
+                <Link href="/portal/dashboard" onClick={() => setMobileOpen(false)} className="block text-center py-2.5 text-sm font-semibold border border-navy-primary rounded-[3px] text-white bg-navy-primary">Dashboard</Link>
+              ) : (
+                <Link href="/portal/login" onClick={() => setMobileOpen(false)} className="block text-center py-2.5 text-sm font-semibold border border-navy-primary rounded-[3px] text-white bg-navy-primary">Client Login</Link>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

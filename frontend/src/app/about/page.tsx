@@ -20,10 +20,10 @@ export default function AboutPage() {
             </div>
             <div className="px-8 py-10 sm:px-12 text-text-body leading-relaxed text-sm space-y-4">
               <p className="text-base text-text-body font-light leading-relaxed">
-                B.T. Naik & Company is a professional services firm comprised of Chartered Accountants, established to provide independent and objective assurance, taxation, and advisory services.
+                B.T. Naik & Company is a Chartered Accountant firm providing assurance, taxation, and advisory services.
               </p>
               <p className="text-base text-text-body font-light leading-relaxed">
-                Our practice is built on a foundation of professional ethics and regulatory compliance. We aim to deliver structured solutions to organizations and individuals, ensuring adherence to statutory frameworks such as the Companies Act, Income Tax Act, and the Goods and Services Tax (GST) Act.
+                Our practice is built on professional ethics and regulatory compliance. We deliver structured solutions to organizations and individuals under the Companies Act, Income Tax Act, and GST Act.
               </p>
             </div>
           </div>

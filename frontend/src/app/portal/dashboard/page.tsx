@@ -32,7 +32,7 @@ export default function DashboardPage() {
   const fetchDocuments = async () => {
     if (!user) return;
     if (!isFirebaseConfigured) {
-      console.warn('Firebase not configured – cannot fetch documents');
+      console.warn('Firebase not configured - cannot fetch documents');
       setLoadingDocs(false);
       return;
     }
@@ -55,60 +55,52 @@ export default function DashboardPage() {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file || !user) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      setUploadError('File size exceeds 10MB limit.');
-      return;
-    }
+      // Guard clauses - keep the function shallow
+      if (file.size > 10 * 1024 * 1024) return setUploadError('File size exceeds 10MB limit.');
+      if (!isSupabaseConfigured) return setUploadError('Supabase is not configured - cannot upload files.');
 
-    if (!isSupabaseConfigured) {
-      setUploadError('Supabase is not configured – cannot upload files.');
-      return;
-    }
+      // Verify bucket exists - fail fast
+      const { error: bucketError } = await supabase.storage.from('client-documents').list('', { limit: 1 });
+      if (bucketError) return setUploadError('Supabase bucket "client-documents" not found. Create it in your Supabase project.');
 
-    setUploading(true);
-    setUploadError('');
+      setUploading(true);
+      setUploadError('');
 
-    try {
-      const filePath = `clients/${user.uid}/${Date.now()}_${file.name}`;
-      const { data, error: uploadError } = await supabase.storage
-        .from('client-documents')
-        .upload(filePath, file);
+      try {
+        const filePath = `clients/${user.uid}/${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage.from('client-documents').upload(filePath, file);
+        if (uploadError) throw uploadError;
 
-      if (uploadError) throw uploadError;
+        const { data: { publicUrl } } = supabase.storage.from('client-documents').getPublicUrl(filePath);
+        const downloadUrl = publicUrl;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('client-documents')
-        .getPublicUrl(filePath);
-
-      const downloadUrl = publicUrl;
-
-      if (!isFirebaseConfigured) {
-        console.warn('Firebase not configured – cannot store document metadata.');
-        setUploadError('Document uploaded, but metadata cannot be saved (Firebase not configured).');
-      } else {
-        await addDoc(collection(db, 'documents'), {
-          userId: user.uid,
-          userEmail: user.email || user.phoneNumber || 'Unknown',
-          filename: file.name,
-          url: downloadUrl,
-          size: file.size,
-          createdAt: serverTimestamp(),
-        });
+        if (!isFirebaseConfigured) {
+          console.warn('Firebase not configured - cannot store document metadata.');
+          setUploadError('Document uploaded, but metadata cannot be saved (Firebase not configured).');
+        } else {
+          await addDoc(collection(db, 'documents'), {
+            userId: user.uid,
+            userEmail: user.email || user.phoneNumber || 'Unknown',
+            filename: file.name,
+            url: downloadUrl,
+            size: file.size,
+            createdAt: serverTimestamp(),
+          });
+        }
+        await fetchDocuments();
+        e.target.value = '';
+      } catch (err: any) {
+        console.error('Upload error:', err);
+        setUploadError(err.message || 'Failed to upload document.');
+      } finally {
+        setUploading(false);
       }
+    };
 
-      await fetchDocuments();
-      e.target.value = '';
-    } catch (error: any) {
-      console.error('Upload error:', error);
-      setUploadError(error.message || 'Failed to upload document.');
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const formatSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';

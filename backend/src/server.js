@@ -29,8 +29,7 @@ app.post('/api/contact', (req, res) => {
   }
 
   // Log inquiry (In production, wire to email service or database)
-  console.log(`[INQUIRY RECEIVED] From: ${name} (${email}, Phone: ${phone || 'N/A'}) | Subject: ${subject}`);
-  console.log(`Message: ${message}`);
+  console.log(`[INQUIRY RECEIVED] Subject: ${subject}`);
 
   return res.json({
     success: true,
@@ -55,5 +54,5 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 B.T. Naik & Co. Backend API running on port ${PORT}`);
+  console.log(`B.T. Naik & Co. Backend API running on port ${PORT}`);
 });
